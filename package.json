@@ -9,10 +9,14 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "parcel": "^2.0.0-beta.1"
-  },
   "devDependencies": {
+    "parcel": "^2.0.0-beta.1",
     "sass": "^1.75.0"
+  },
+  "dependencies": {
+    "config.js": "^0.1.0",
+    "core-js": "^3.6.5",
+    "fractional": "^1.0.0",
+    "regenerator-runtime": "^0.13.7"
   }
 }
