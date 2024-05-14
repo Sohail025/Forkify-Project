@@ -1,4 +1,4 @@
-import { JsonDataEx } from './helpers.js';
+import { JsonDataEx, sendJSON } from './helpers.js';
 import { async } from 'regenerator-runtime';
 import { API_URL, PAGE_LIMIT } from './config.js';
 import bookmarks from './views/bookmarks.js';
@@ -80,5 +80,29 @@ export const deletebookmarks = id => {
 export const init = () => {
   let storage = localStorage.getItem('bookmarks');
   if (storage) state.bookmark = JSON.parse(storage);
+};
+export const uploadReciple = newrecipe => {
+  try {
+    const ingredients = Object.entries(newrecipe)
+      .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
+      .map(ing => {
+        const ingArr = ing[1].replaceAll(' ', '').split(',');
+        if (ingArr.length !== 3) throw new Error('Enter Correct Ingredient');
+        const [quantity, unit, description] = ingArr;
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+    const recipe = {
+      title: newrecipe.title,
+      source_url: newrecipe.sourceUrl,
+      image_url: newrecipe.image,
+      publisher: newrecipe.publisher,
+      cookingTime: +newrecipe.cookingTime,
+      servings: +newrecipe.servings,
+      ingredients,
+    };
+    console.log(recipe);
+  } catch (error) {
+    throw error;
+  }
 };
 init();

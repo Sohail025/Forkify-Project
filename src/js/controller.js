@@ -4,6 +4,8 @@ import Searchview from './views/searchView.js';
 import Resultsview from './views/Resultsview.js';
 import paginationView from './views/paginationView.js';
 import bookmarkview from './views/bookmarks.js';
+import addRecipeView from './views/addrecipe.js';
+import { async } from 'regenerator-runtime';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
@@ -48,6 +50,14 @@ const bookmark = () => {
 const updatebookmark = () => {
   bookmarkview.render(modal.state.bookmark);
 };
+const addRecipeControler = data => {
+  try {
+    modal.uploadReciple(data);
+  } catch (error) {
+    console.log(error);
+    addRecipeView.renderError(error.message);
+  }
+};
 const init = () => {
   bookmarkview.ControlBookmarks(updatebookmark);
   Recipeview.hashchange(API);
@@ -55,5 +65,6 @@ const init = () => {
   paginationView.paginationHander(paginationbtn);
   Recipeview.UpdateServingsHandler(controlServings);
   Recipeview.bookmarkHandler(bookmark);
+  addRecipeView.Recipehandler(addRecipeControler);
 };
 init();

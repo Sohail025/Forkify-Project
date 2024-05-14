@@ -395,6 +395,8 @@ var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 var _Resultsview = _interopRequireDefault(require("./views/Resultsview.js"));
 var _paginationView = _interopRequireDefault(require("./views/paginationView.js"));
 var _bookmarks = _interopRequireDefault(require("./views/bookmarks.js"));
+var _addrecipe = _interopRequireDefault(require("./views/addrecipe.js"));
+var _regeneratorRuntime = require("regenerator-runtime");
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
 function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
@@ -438,6 +440,14 @@ const bookmark = () => {
 const updatebookmark = () => {
   _bookmarks.default.render(modal.state.bookmark);
 };
+const addRecipeControler = data => {
+  try {
+    modal.uploadReciple(data);
+  } catch (error) {
+    console.log(error);
+    _addrecipe.default.renderError(error.message);
+  }
+};
 const init = () => {
   _bookmarks.default.ControlBookmarks(updatebookmark);
   _view.default.hashchange(API);
@@ -445,9 +455,10 @@ const init = () => {
   _paginationView.default.paginationHander(paginationbtn);
   _view.default.UpdateServingsHandler(controlServings);
   _view.default.bookmarkHandler(bookmark);
+  _addrecipe.default.Recipehandler(addRecipeControler);
 };
 init();
-},{"core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","./modal.js":"1fbc6d338fff57a45796689a940066e2","./views/view.js":"6a3957d8744bf1d70b2b44f3726dda59","./views/searchView.js":"c5d792f7cac03ef65de30cc0fbb2cae7","./views/Resultsview.js":"ebf445bbfb8adb2daba7ed92da40ed0b","./views/paginationView.js":"d2063f3e7de2e4cdacfcb5eb6479db05","./views/bookmarks.js":"b17461cfa9eb7582829ebdf6e31849c8"}],"140df4f8e97a45c53c66fead1f5a9e92":[function(require,module,exports) {
+},{"core-js/modules/web.immediate.js":"140df4f8e97a45c53c66fead1f5a9e92","./modal.js":"1fbc6d338fff57a45796689a940066e2","./views/view.js":"6a3957d8744bf1d70b2b44f3726dda59","./views/searchView.js":"c5d792f7cac03ef65de30cc0fbb2cae7","./views/Resultsview.js":"ebf445bbfb8adb2daba7ed92da40ed0b","./views/paginationView.js":"d2063f3e7de2e4cdacfcb5eb6479db05","./views/bookmarks.js":"b17461cfa9eb7582829ebdf6e31849c8","./views/addrecipe.js":"1483a5e18f84997534018d54a2cdc385","regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16"}],"140df4f8e97a45c53c66fead1f5a9e92":[function(require,module,exports) {
 var $ = require('../internals/export');
 var global = require('../internals/global');
 var task = require('../internals/task');
@@ -1219,7 +1230,7 @@ module.exports = getBuiltIn('navigator', 'userAgent') || '';
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateServings = exports.state = exports.searchResults = exports.init = exports.getSearchpage = exports.fetchingData = exports.deletebookmarks = exports.bookmark = void 0;
+exports.uploadReciple = exports.updateServings = exports.state = exports.searchResults = exports.init = exports.getSearchpage = exports.fetchingData = exports.deletebookmarks = exports.bookmark = void 0;
 var _helpers = require("./helpers.js");
 var _regeneratorRuntime = require("regenerator-runtime");
 var _config = require("./config.js");
@@ -1312,6 +1323,33 @@ const init = () => {
   if (storage) state.bookmark = JSON.parse(storage);
 };
 exports.init = init;
+const uploadReciple = newrecipe => {
+  try {
+    const ingredients = Object.entries(newrecipe).filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '').map(ing => {
+      const ingArr = ing[1].replaceAll(' ', '').split(',');
+      if (ingArr.length !== 3) throw new Error('Enter Correct Ingredient');
+      const [quantity, unit, description] = ingArr;
+      return {
+        quantity: quantity ? +quantity : null,
+        unit,
+        description
+      };
+    });
+    const recipe = {
+      title: newrecipe.title,
+      source_url: newrecipe.sourceUrl,
+      image_url: newrecipe.image,
+      publisher: newrecipe.publisher,
+      cookingTime: +newrecipe.cookingTime,
+      servings: +newrecipe.servings,
+      ingredients
+    };
+    console.log(recipe);
+  } catch (error) {
+    throw error;
+  }
+};
+exports.uploadReciple = uploadReciple;
 init();
 },{"./helpers.js":"0e8dcd8a4e1c61cf18f78e1c2563655d","regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16","./config.js":"09212d541c5c40ff2bd93475a904f8de","./views/bookmarks.js":"b17461cfa9eb7582829ebdf6e31849c8"}],"0e8dcd8a4e1c61cf18f78e1c2563655d":[function(require,module,exports) {
 "use strict";
@@ -1319,7 +1357,7 @@ init();
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.JsonDataEx = void 0;
+exports.sendJSON = exports.JsonDataEx = void 0;
 var _regeneratorRuntime = require("regenerator-runtime");
 var _config = require("./config.js");
 const timeout = function (s) {
@@ -1331,8 +1369,6 @@ const timeout = function (s) {
 };
 const JsonDataEx = async function (url) {
   try {
-    let fetchPro = fetch(url);
-    // const res = await Promise.race[(fetchPro, timeout(10))];
     const res = await fetch(url);
     const data = await res.json();
     if (!res.ok) throw new Error(`${data.message} (${res.status})`);
@@ -1342,6 +1378,24 @@ const JsonDataEx = async function (url) {
   }
 };
 exports.JsonDataEx = JsonDataEx;
+const sendJSON = async function (url, data) {
+  try {
+    const fetchPro = fetch(url, {
+      method: 'POST',
+      Headers: {
+        'Content-Type': 'aplication/json'
+      },
+      body: JSON.stringify(data)
+    });
+    const res = await promise.race([fetchPro, timeout(10)]);
+    const data = await res.json();
+    if (!res.ok) throw new Error(`${data.message} (${res.status})`);
+    return data;
+  } catch (err) {
+    throw err;
+  }
+};
+exports.sendJSON = sendJSON;
 },{"regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16","./config.js":"09212d541c5c40ff2bd93475a904f8de"}],"e155e0d3930b156f86c48e8d05522b16":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -2124,7 +2178,7 @@ class Bookmarkview extends _ParentView.default {
   }
 }
 var _default = exports.default = new Bookmarkview();
-},{"./ParentView.js":"153472e6a0ffe4cfdfce6a3a2675e9e3","./Upreview.js":"7cf7248e72e081819ff0e77925dd3ca5","../modal.js":"1fbc6d338fff57a45796689a940066e2"}],"153472e6a0ffe4cfdfce6a3a2675e9e3":[function(require,module,exports) {
+},{"../modal.js":"1fbc6d338fff57a45796689a940066e2","./ParentView.js":"153472e6a0ffe4cfdfce6a3a2675e9e3","./Upreview.js":"7cf7248e72e081819ff0e77925dd3ca5"}],"153472e6a0ffe4cfdfce6a3a2675e9e3":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2846,7 +2900,7 @@ class resultsView extends _ParentView.default {
   }
 }
 var _default = exports.default = new resultsView();
-},{"./ParentView.js":"153472e6a0ffe4cfdfce6a3a2675e9e3","../../img/icons.svg":"89f6eff21411a21c0bcd715fcfea7eab","./Upreview.js":"7cf7248e72e081819ff0e77925dd3ca5"}],"d2063f3e7de2e4cdacfcb5eb6479db05":[function(require,module,exports) {
+},{"../../img/icons.svg":"89f6eff21411a21c0bcd715fcfea7eab","./ParentView.js":"153472e6a0ffe4cfdfce6a3a2675e9e3","./Upreview.js":"7cf7248e72e081819ff0e77925dd3ca5"}],"d2063f3e7de2e4cdacfcb5eb6479db05":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2909,6 +2963,48 @@ class paginationView extends _ParentView.default {
   }
 }
 var _default = exports.default = new paginationView();
+},{"../../img/icons.svg":"89f6eff21411a21c0bcd715fcfea7eab","./ParentView.js":"153472e6a0ffe4cfdfce6a3a2675e9e3"}],"1483a5e18f84997534018d54a2cdc385":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _icons = _interopRequireDefault(require("../../img/icons.svg"));
+var _ParentView = _interopRequireDefault(require("./ParentView.js"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+class addRecipeView extends _ParentView.default {
+  parentElement = document.querySelector('.upload');
+  window = document.querySelector('.add-recipe-window');
+  overlay = document.querySelector('.overlay');
+  btnOpen = document.querySelector('.nav__btn--add-recipe');
+  btnClose = document.querySelector('.btn--close-modal');
+  constructor() {
+    super();
+    this.btnOpenHandler();
+    this.btnCloseHandler();
+  }
+  btnHremover() {
+    this.overlay.classList.toggle('hidden');
+    this.window.classList.toggle('hidden');
+  }
+  btnOpenHandler() {
+    this.btnOpen.addEventListener('click', this.btnHremover.bind(this));
+  }
+  btnCloseHandler() {
+    this.btnClose.addEventListener('click', this.btnHremover.bind(this));
+  }
+  Recipehandler(handler) {
+    this.parentElement.addEventListener('submit', e => {
+      e.preventDefault();
+      const dataArr = [...new FormData(this.parentElement)];
+      const data = Object.fromEntries(dataArr);
+      handler(data);
+    });
+  }
+  generateMarkup() {}
+}
+var _default = exports.default = new addRecipeView();
 },{"../../img/icons.svg":"89f6eff21411a21c0bcd715fcfea7eab","./ParentView.js":"153472e6a0ffe4cfdfce6a3a2675e9e3"}]},{},["400ac04663e0648e38abb26dbe5fcde4","71cbba5b56562f12c2eaea38b79d5946","175e469a7ea7db1c8c0744d04372621f"], null)
 
 //# sourceMappingURL=controller.5f1c2aff.js.map
